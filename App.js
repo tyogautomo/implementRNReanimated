@@ -1,114 +1,95 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, { Component } from 'react';
+import { StyleSheet, View, Text, Dimensions, Easing, Animated } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
+// import Animated, { event, cond, eq, add, set } from 'react-native-reanimated';
 
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+class App extends Component {
+  constructor() {
+    super()
+    this.translateX = new Animated.Value(0);
+    this.translateY = new Animated.Value(0);
+    this.onGestureHandler = Animated.event([
+      {
+        nativeEvent: {
+          translationX: this.translateX,
+          translationY: this.translateY
+        }
+      }
+    ], { useNativeDriver: true })
+  }
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  componentDidMount() {
+    this.veryHardComputing();
+  }
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
+  veryHardComputing = () => {
+    // setInterval(() => {
+    //   for (let i = 0; i < 1000; i++) {
+    //     console.log("hehhehe")
+    //   }
+    // }, 1000);
+  };
+
+  onHandlerStateChange = event => {
+    if (event.nativeEvent.oldState == State.ACTIVE) {
+      Animated.parallel([
+        Animated.spring(
+          this.translateX,
+          {
+            toValue: 0,
+            tension: 100,
+            useNativeDriver: true
+          }
+        ),
+        Animated.spring(
+          this.translateY,
+          {
+            toValue: 0,
+            tension: 100,
+            useNativeDriver: true
+          }
+        )
+      ]).start();
+    }
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        <PanGestureHandler
+          onGestureEvent={this.onGestureHandler}
+          onHandlerStateChange={this.onHandlerStateChange}
+          maxPointers={1}
+        >
+          <Animated.View style={[
+            styles.round,
+            {
+              transform: [
+                {
+                  translateX: this.translateX,
+                  translateY: this.translateY
+                }
+              ]
+            }
+          ]}></Animated.View>
+        </PanGestureHandler>
+      </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
+  container: {
+    flex: 1,
+    alignItems: 'center'
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
+  round: {
+    backgroundColor: 'blue',
+    width: 80,
+    height: 80,
+    borderRadius: 50,
+    top: 300
+  }
 });
 
 export default App;
