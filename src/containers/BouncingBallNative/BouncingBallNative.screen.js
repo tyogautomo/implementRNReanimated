@@ -57,10 +57,10 @@ class BouncingBallNative extends Component {
     this.onGestureHandler = event([
       {
         nativeEvent: {
-          translationX: this.dragX,
+          // translationX: this.dragX,
           translationY: this.dragY,
           state: this.gestureState1,
-          velocityX: this.dragVX,
+          // velocityX: this.dragVX,
           velocityY: this.dragVY
         }
       }
@@ -145,7 +145,7 @@ class BouncingBallNative extends Component {
               ]
             }
           ]}>
-            <Text style={styles.text}>Drag</Text>
+            <Text style={styles.text}>Pull</Text>
             <Text style={styles.text}>Me!</Text>
           </Animated.View>
         </PanGestureHandler>
@@ -171,7 +171,9 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    width: '100%',
+    textAlign: 'center'
   }
 });
 

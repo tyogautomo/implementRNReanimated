@@ -10,7 +10,7 @@ class BouncingBallRN extends Component {
     this.onGestureHandler = Animated.event([
       {
         nativeEvent: {
-          translationX: this.translateX,
+          // translationX: this.translateX,
           translationY: this.translateY
         }
       }
@@ -18,8 +18,8 @@ class BouncingBallRN extends Component {
   }
 
   componentDidMount() {
-    // this.focusListener();
-    // this.blurListener();
+    this.focusListener();
+    this.blurListener();
   }
 
   focusListener = () => {
@@ -50,16 +50,26 @@ class BouncingBallRN extends Component {
         Animated.spring(
           this.translateX,
           {
-            toValue: 0,
-            tension: 100,
+            damping: 7,
+            mass: 1,
+            stiffness: 121.6,
+            overshootClamping: false,
+            restSpeedThreshold: 0.001,
+            restDisplacementThreshold: 0.001,
+            toValue: new Animated.Value(0),
             useNativeDriver: true
           }
         ),
         Animated.spring(
           this.translateY,
           {
-            toValue: 0,
-            tension: 100,
+            damping: 7,
+            mass: 1,
+            stiffness: 121.6,
+            overshootClamping: false,
+            restSpeedThreshold: 0.001,
+            restDisplacementThreshold: 0.001,
+            toValue: new Animated.Value(0),
             useNativeDriver: true
           }
         )
@@ -86,7 +96,7 @@ class BouncingBallRN extends Component {
               ]
             }
           ]}>
-            <Text style={styles.text}>Drag</Text>
+            <Text style={styles.text}>Pull</Text>
             <Text style={styles.text}>Me!</Text>
           </Animated.View>
         </PanGestureHandler>
@@ -112,7 +122,9 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    width: '100%',
+    textAlign: 'center'
   }
 });
 
