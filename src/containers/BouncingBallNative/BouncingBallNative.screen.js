@@ -59,9 +59,9 @@ class BouncingBallNative extends Component {
         nativeEvent: {
           // translationX: this.dragX,
           translationY: this.dragY,
-          state: this.gestureState1,
           // velocityX: this.dragVX,
-          velocityY: this.dragVY
+          velocityY: this.dragVY,
+          state: this.gestureState1
         }
       }
     ]);

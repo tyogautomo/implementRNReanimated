@@ -18,8 +18,8 @@ class BouncingBallRN extends Component {
   }
 
   componentDidMount() {
-    this.focusListener();
-    this.blurListener();
+    // this.focusListener();
+    // this.blurListener();
   }
 
   focusListener = () => {
