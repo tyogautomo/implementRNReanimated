@@ -80,6 +80,7 @@ class BouncingBallRN extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text style={styles.title}>JS Thread</Text>
         <PanGestureHandler
           onGestureEvent={this.onGestureHandler}
           onHandlerStateChange={this.onHandlerStateChange}
@@ -125,6 +126,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     width: '100%',
     textAlign: 'center'
+  },
+  title: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    position: 'absolute',
+    top: 80
   }
 });
 
