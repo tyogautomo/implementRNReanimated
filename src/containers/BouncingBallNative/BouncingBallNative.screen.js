@@ -10,7 +10,6 @@ import Animated, {
   startClock,
   stopClock,
   clockRunning,
-  debug,
   Value,
   event,
 } from 'react-native-reanimated';
@@ -18,22 +17,26 @@ import Animated, {
 class BouncingBallNative extends Component {
   constructor() {
     super()
-    this.gestureState = new Value(-1);
+    this.gestureState = new Value(0);
+    this.oldGestureState = new Value(0);
 
     this.clock = new Clock();
 
     this.dragY = new Value(0);
     this.dragVY = new Value(0);
     this.translateY = cond(
-      eq(this.gestureState, State.ACTIVE),
+      eq(this.oldGestureState, State.ACTIVE),
+      [
+        set(
+          this.dragY,
+          this.runSpring(this.clock, this.dragY, this.dragVY, new Value(0))
+        ),
+        this.dragY
+      ],
       [
         stopClock(this.clock),
         this.dragY
-      ],
-      set(
-        this.dragY,
-        this.runSpring(this.clock, this.dragY, this.dragVY, 0)
-      )
+      ]
     );
 
     this.onGestureHandler = event([
@@ -41,7 +44,8 @@ class BouncingBallNative extends Component {
         nativeEvent: {
           translationY: this.dragY,
           velocityY: this.dragVY,
-          state: this.gestureState
+          state: this.gestureState,
+          oldState: this.oldGestureState
         }
       }
     ]);
@@ -105,7 +109,7 @@ class BouncingBallNative extends Component {
           startClock(clock)
         ]),
       spring(clock, state, config),
-      cond(state.finished, debug('stop clock', stopClock(clock))),
+      cond(state.finished, stopClock(clock)),
       state.position
     ];
   };
