@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -7,8 +9,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     height: 50,
-    elevation: 2,
-    backgroundColor: 'white'
+    width: '100%',
+    // elevation: 2,
+    backgroundColor: 'white',
+    position: 'absolute'
   },
   headerText: {
     fontFamily: 'ProximaNova',
@@ -37,7 +41,25 @@ const styles = StyleSheet.create({
     borderColor: '#d9d9d9',
     height: 50,
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 2
+  },
+  photosListContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  photoItem: index => ({
+    width: (width / 3) - (4 / 3),
+    height: (width / 3) - (4 / 3),
+    marginBottom: 2,
+    marginRight: (index + 1) % 3 === 0 ? 0 : 2
+  }),
+  previewContainer: {
+    width, height: '100%',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)'
   }
 })
 
