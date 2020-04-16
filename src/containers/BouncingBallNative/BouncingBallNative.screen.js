@@ -51,6 +51,10 @@ class BouncingBallNative extends Component {
     ]);
   };
 
+  state = {
+    number: 0
+  };
+
   componentDidMount() {
     // this.focusListener();
     // this.blurListener();
@@ -59,7 +63,7 @@ class BouncingBallNative extends Component {
   focusListener = () => {
     const { navigation } = this.props;
     navigation.addListener('focus', () => {
-      this.hardComputing();
+      this.heavyTask();
     });
   };
 
@@ -70,10 +74,11 @@ class BouncingBallNative extends Component {
     });
   };
 
-  hardComputing = () => {
+  heavyTask = () => {
     this.interval = setInterval(() => {
       for (let i = 0; i < 3000; i++) {
-        console.log("hard task [bouncing ball Native Thread]")
+        console.log(i)
+        this.setState({ number: i })
       }
     }, 1000);
   };

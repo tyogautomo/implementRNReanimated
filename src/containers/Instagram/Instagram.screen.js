@@ -2,13 +2,15 @@ import React, { Component, createRef } from 'react';
 import { View, Text, Image, ScrollView, Dimensions } from 'react-native';
 import IconIon from 'react-native-vector-icons/Ionicons';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
-import IconSimple from 'react-native-vector-icons/SimpleLineIcons'
-import IconAwesomeFive from 'react-native-vector-icons/FontAwesome5'
+import IconSimple from 'react-native-vector-icons/SimpleLineIcons';
+import IconAwesomeFive from 'react-native-vector-icons/FontAwesome5';
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import {
   TouchableOpacity,
   PanGestureHandler,
   LongPressGestureHandler,
   NativeViewGestureHandler,
+  TapGestureHandler,
   State
 } from 'react-native-gesture-handler';
 import Animated, { Value, event, cond, eq, set, block } from 'react-native-reanimated';
@@ -18,29 +20,51 @@ import { styles } from './Instagram.style';
 const { width } = Dimensions.get('window');
 
 class Instagram extends Component {
-  constructor() {
+  constructor(props) {
     super()
     this.longPressRef = createRef();
     this.panGestureRef = createRef();
     this.scrollRef = createRef();
 
+    this.likeRef = createRef();
+    this.commentRef = createRef();
+    this.sendRef = createRef();
+    this.menuLayout = {}
+
     this.longPressState = new Value(0)
     this.panGestureState = new Value(0)
     this.previewOpacity = new Value(0)
+
+    this.dragX = new Value(0);
+    this.dragY = new Value(0);
+    this.gambar = new Value('')
 
     this.onLongPressStateChange = event([{
       nativeEvent: {
         state: this.longPressState
       }
     }])
-    this.onPanStateChange = event([{
+    this.onPanGestureHandler = event([{
       nativeEvent: {
-        state: this.panGestureState
+        state: this.panGestureState,
+        absoluteX: this.dragX,
+        absoluteY: this.dragY
       }
     }])
     this.state = {
-      photos: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-      renderPreview: false
+      photos: [
+        { image: 'https://i.ytimg.com/vi/NRmSf9VqrUA/maxresdefault.jpg' },
+        { image: 'https://i.pinimg.com/originals/1f/03/3a/1f033af59c8069070ec6d2b70ddb7c4f.jpg' },
+        { image: 'https://i.pinimg.com/originals/9d/8a/fd/9d8afda27846c8f37c6028edd1f16a7a.jpg' },
+        { image: 'https://i.ytimg.com/vi/NRmSf9VqrUA/maxresdefault.jpg' },
+        { image: 'https://i.pinimg.com/originals/1f/03/3a/1f033af59c8069070ec6d2b70ddb7c4f.jpg' },
+        { image: 'https://i.pinimg.com/originals/9d/8a/fd/9d8afda27846c8f37c6028edd1f16a7a.jpg' },
+        { image: 'https://i.ytimg.com/vi/NRmSf9VqrUA/maxresdefault.jpg' },
+        { image: 'https://i.pinimg.com/originals/1f/03/3a/1f033af59c8069070ec6d2b70ddb7c4f.jpg' },
+        { image: 'https://i.pinimg.com/originals/9d/8a/fd/9d8afda27846c8f37c6028edd1f16a7a.jpg' },
+      ],
+      renderPreview: false,
+      currentPreviewUri: ''
     };
   };
 
@@ -117,7 +141,7 @@ class Instagram extends Component {
     const { photos } = this.state;
     return (
       <View style={styles.photosListContainer}>
-        {photos.map((photo, index) => this.renderItem(index))}
+        {photos.map((photo, index) => this.renderItem(photo, index))}
       </View>
     )
   };
@@ -126,16 +150,17 @@ class Instagram extends Component {
     console.log('tapped photo item!');
   };
 
-  onPressIn = () => {
-    console.log('HEHEHHE');
-  }
+  onPressIn = (uri) => {
+    console.log('masukkin')
+    this.setState({ currentPreviewUri: uri });
+  };
 
-  renderItem = (index) => {
+  renderItem = (photo, index) => {
     return (
       <TouchableOpacity
         key={index}
         activeOpacity={0.7}
-        onPressIn={this.onPressIn}
+        onPressIn={() => this.onPressIn(photo.image)}
         onPress={this.onTapItem}
       >
         <LongPressGestureHandler
@@ -147,20 +172,30 @@ class Instagram extends Component {
             <PanGestureHandler
               ref={this.panGestureRef}
               simultaneousHandlers={[this.longPressRef, this.scrollRef]}
-              onGestureEvent={e => console.log(e.nativeEvent)}
-              onHandlerStateChange={this.onPanStateChange}
+              onGestureEvent={this.onPanGestureHandler}
+              onHandlerStateChange={this.onPanGestureHandler}
             >
-              <Animated.View>
-                <Animated.Image
-                  style={styles.photoItem(index)}
-                  source={{ uri: 'https://pbs.twimg.com/profile_images/1238942163758510080/Hst-APUq_400x400.jpg' }}
-                />
-              </Animated.View>
+              <Animated.Image
+                style={styles.photoItem(index)}
+                source={{ uri: photo.image }}
+              />
             </PanGestureHandler>
           </Animated.View>
         </LongPressGestureHandler>
       </TouchableOpacity>
     );
+  };
+
+  handleMeasureRef = (ref, type) => (e) => {
+    console.log(ref.current.measure, '<<<<<<<<<<<<')
+    if (ref.current.measure) {
+      ref.current.measure((x, y, width, height, pageX, pageY) => {
+        this.menuLayout[type] = {
+          absoluteX: pageX,
+          absoluteY: pageY
+        }
+      });
+    }
   };
 
   renderPreview = () => {
@@ -178,10 +213,24 @@ class Instagram extends Component {
           </View>
           <Image
             style={{ width: width / 1.1, height: width / 1.1 }}
-            source={{ uri: 'https://pbs.twimg.com/profile_images/1238942163758510080/Hst-APUq_400x400.jpg' }}
+            source={{ uri: 'https://i.pinimg.com/originals/1f/03/3a/1f033af59c8069070ec6d2b70ddb7c4f.jpg' }}
           />
-          <View>
-
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 15 }}>
+            <IconAwesome
+              ref={this.likeRef}
+              name="heart-o" size={25}
+              color="#303030"
+              onLayout={this.handleMeasureRef(this.likeRef, 'like')} />
+            <IconAwesome
+              ref={this.commentRef}
+              name="comment-o" size={25}
+              color="#303030"
+              onLayout={this.handleMeasureRef(this.commentRef, 'comment')} />
+            <IconAwesome
+              ref={this.sendRef}
+              name="send-o" size={25}
+              color="#303030"
+              onLayout={this.handleMeasureRef(this.sendRef, 'send')} />
           </View>
         </Animated.View>
       </Animated.View>
