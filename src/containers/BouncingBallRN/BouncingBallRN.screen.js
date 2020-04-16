@@ -5,12 +5,10 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 class BouncingBallRN extends Component {
   constructor() {
     super()
-    this.translateX = new Animated.Value(0);
     this.translateY = new Animated.Value(0);
     this.onGestureHandler = Animated.event([
       {
         nativeEvent: {
-          // translationX: this.translateX,
           translationY: this.translateY
         }
       }
@@ -46,34 +44,19 @@ class BouncingBallRN extends Component {
 
   onHandlerStateChange = event => {
     if (event.nativeEvent.oldState == State.ACTIVE) {
-      Animated.parallel([
-        Animated.spring(
-          this.translateX,
-          {
-            damping: 7,
-            mass: 1,
-            stiffness: 121.6,
-            overshootClamping: false,
-            restSpeedThreshold: 0.001,
-            restDisplacementThreshold: 0.001,
-            toValue: new Animated.Value(0),
-            useNativeDriver: true
-          }
-        ),
-        Animated.spring(
-          this.translateY,
-          {
-            damping: 7,
-            mass: 1,
-            stiffness: 121.6,
-            overshootClamping: false,
-            restSpeedThreshold: 0.001,
-            restDisplacementThreshold: 0.001,
-            toValue: new Animated.Value(0),
-            useNativeDriver: true
-          }
-        )
-      ]).start();
+      Animated.spring(
+        this.translateY,
+        {
+          damping: 7,
+          mass: 1,
+          stiffness: 121.6,
+          overshootClamping: false,
+          restSpeedThreshold: 0.001,
+          restDisplacementThreshold: 0.001,
+          toValue: new Animated.Value(0),
+          useNativeDriver: true
+        }
+      ).start();
     }
   };
 
@@ -91,7 +74,6 @@ class BouncingBallRN extends Component {
             {
               transform: [
                 {
-                  translateX: this.translateX,
                   translateY: this.translateY
                 }
               ]

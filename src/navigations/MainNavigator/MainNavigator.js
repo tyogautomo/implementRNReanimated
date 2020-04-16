@@ -6,7 +6,7 @@ const Drawer = createDrawerNavigator();
 
 const MainNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="TouchableExample">
+    <Drawer.Navigator initialRouteName="BouncingBallNative">
       <Drawer.Screen name="BouncingBallRN" component={BouncingBallRN} options={{ title: 'Bouncing Ball RN' }} />
       <Drawer.Screen name="BouncingBallNative" component={BouncingBallNative} options={{ title: 'Bouncing Ball Native' }} />
       <Drawer.Screen name="TouchableExample" component={TouchableExample} options={{ title: 'Touchable Example' }} />

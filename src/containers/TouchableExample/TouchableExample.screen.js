@@ -47,7 +47,7 @@ class TouchableExample extends Component {
 
     const config = {
       duration: 300,
-      toValue: new Value(-1),
+      toValue: new Value(0),
       easing: Easing.inOut(Easing.ease)
     }
 

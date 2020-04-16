@@ -20,44 +20,27 @@ class BouncingBallNative extends Component {
     super()
     this.gestureState = new Value(-1);
 
-    this.clockX = new Clock();
-    this.clockY = new Clock();
-
-    this.dragX = new Value(0);
-    this.dragVX = new Value(0);
-    this.translateX = cond(
-      eq(this.gestureState, State.ACTIVE),
-      [
-        stopClock(this.clockX),
-        this.dragX
-      ],
-      set(
-        this.dragX,
-        this.runSpring(this.clockX, this.dragX, this.dragVX, 0)
-      )
-    );
+    this.clock = new Clock();
 
     this.dragY = new Value(0);
     this.dragVY = new Value(0);
     this.translateY = cond(
       eq(this.gestureState, State.ACTIVE),
       [
-        stopClock(this.clockY),
+        stopClock(this.clock),
         this.dragY
       ],
       set(
         this.dragY,
-        this.runSpring(this.clockY, this.dragY, this.dragVY, 0)
+        this.runSpring(this.clock, this.dragY, this.dragVY, 0)
       )
     );
 
     this.onGestureHandler = event([
       {
         nativeEvent: {
-          translationX: this.dragX,
-          // translationY: this.dragY,
-          velocityX: this.dragVX,
-          // velocityY: this.dragVY,
+          translationY: this.dragY,
+          velocityY: this.dragVY,
           state: this.gestureState
         }
       }
@@ -141,7 +124,6 @@ class BouncingBallNative extends Component {
             {
               transform: [
                 {
-                  translateX: this.translateX,
                   translateY: this.translateY
                 }
               ]
