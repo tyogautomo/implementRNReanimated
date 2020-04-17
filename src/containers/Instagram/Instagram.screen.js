@@ -24,6 +24,7 @@ class Instagram extends Component {
     super()
     this.longPressRef = createRef();
     this.panGestureRef = createRef();
+    this.tapGestureRef = createRef();
     this.scrollRef = createRef();
 
     this.likeRef = createRef();
@@ -37,7 +38,7 @@ class Instagram extends Component {
 
     this.dragX = new Value(0);
     this.dragY = new Value(0);
-    this.gambar = new Value('')
+    this.gambar = 'https://i.ytimg.com/vi/NRmSf9VqrUA/maxresdefault.jpg';
 
     this.onLongPressStateChange = event([{
       nativeEvent: {
@@ -64,7 +65,7 @@ class Instagram extends Component {
         { image: 'https://i.pinimg.com/originals/9d/8a/fd/9d8afda27846c8f37c6028edd1f16a7a.jpg' },
       ],
       renderPreview: false,
-      currentPreviewUri: ''
+      currentPreviewUri: 'https://i.ytimg.com/vi/NRmSf9VqrUA/maxresdefault.jpg'
     };
   };
 
@@ -146,43 +147,43 @@ class Instagram extends Component {
     )
   };
 
-  onTapItem = (e) => {
-    console.log('tapped photo item!');
-  };
-
-  onPressIn = (uri) => {
-    console.log('masukkin')
-    this.setState({ currentPreviewUri: uri });
+  onTapStateChange = (e) => {
+    if (e.nativeEvent.state === State.ACTIVE) {
+      console.log('to another page')
+    }
   };
 
   renderItem = (photo, index) => {
     return (
-      <TouchableOpacity
+      <TapGestureHandler
         key={index}
-        activeOpacity={0.7}
-        onPressIn={() => this.onPressIn(photo.image)}
-        onPress={this.onTapItem}
+        ref={this.tapGestureRef}
+        simultaneousHandlers={[this.panGestureRef, this.longPressRef, this.scrollRef]}
+        minPointers={1}
+        onHandlerStateChange={this.onTapStateChange}
       >
-        <LongPressGestureHandler
-          ref={this.longPressRef}
-          simultaneousHandlers={[this.panGestureRef, this.longPressRef]}
-          onHandlerStateChange={this.onLongPressStateChange}
-        >
-          <Animated.View>
-            <PanGestureHandler
-              ref={this.panGestureRef}
-              simultaneousHandlers={[this.longPressRef, this.scrollRef]}
-              onGestureEvent={this.onPanGestureHandler}
-              onHandlerStateChange={this.onPanGestureHandler}
-            >
-              <Animated.Image
-                style={styles.photoItem(index)}
-                source={{ uri: photo.image }}
-              />
-            </PanGestureHandler>
-          </Animated.View>
-        </LongPressGestureHandler>
-      </TouchableOpacity>
+        <Animated.View>
+          <LongPressGestureHandler
+            ref={this.longPressRef}
+            simultaneousHandlers={[this.panGestureRef, this.longPressRef, this.tapGestureRef]}
+            onHandlerStateChange={this.onLongPressStateChange}
+          >
+            <Animated.View>
+              <PanGestureHandler
+                ref={this.panGestureRef}
+                simultaneousHandlers={[this.longPressRef, this.scrollRef, this.tapGestureRef]}
+                onGestureEvent={this.onPanGestureHandler}
+                onHandlerStateChange={this.onPanGestureHandler}
+              >
+                <Animated.Image
+                  style={styles.photoItem(index)}
+                  source={{ uri: photo.image }}
+                />
+              </PanGestureHandler>
+            </Animated.View>
+          </LongPressGestureHandler>
+        </Animated.View>
+      </TapGestureHandler>
     );
   };
 
@@ -213,7 +214,7 @@ class Instagram extends Component {
           </View>
           <Image
             style={{ width: width / 1.1, height: width / 1.1 }}
-            source={{ uri: 'https://i.pinimg.com/originals/1f/03/3a/1f033af59c8069070ec6d2b70ddb7c4f.jpg' }}
+            source={{ uri: this.state.currentPreviewUri }}
           />
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingVertical: 15 }}>
             <IconAwesome
@@ -264,7 +265,7 @@ class Instagram extends Component {
         {this.renderHeaderVoid()}
         <NativeViewGestureHandler
           ref={this.scrollRef}
-          simultaneousHandlers={[this.panGestureRef, this.longPressRef]}
+          simultaneousHandlers={[this.panGestureRef, this.longPressRef, this.tapGestureRef]}
         >
           <ScrollView showsVerticalScrollIndicator={false}>
             {this.renderProfileInfo()}
